@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RAI Solutions · Asistentul AI care răspunde clienților tăi</title>
+<meta name="description" content="Asistent AI pentru site-ul afacerii tale: răspunde clienților oricând, în limba română. 300 lei, o singură dată. Demo gratuit.">
+<meta name="theme-color" content="#06110D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Onest:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06110D; --bg2:#0A1813; --card:#0E2019; --ink:#E9F5EF; --muted:#8FB3A3; --line:rgba(233,245,239,.1);
+  --green:#2BD98F; --green2:#1F8A5B; --sun:#FFD84D; --err:#FF6B61; --bubble:#12291F;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --serif:"Instrument Serif",Georgia,serif;
+  --body:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){--bg:#F1F6F2;--bg2:#E7EFE9;--card:#FFFFFF;--ink:#0F2A20;--muted:#557366;--line:rgba(15,42,32,.12);--green:#1F8A5B;--bubble:#E4F0E8;color-scheme:light}
+}
+:root[data-theme="light"]{--bg:#F1F6F2;--bg2:#E7EFE9;--card:#FFFFFF;--ink:#0F2A20;--muted:#557366;--line:rgba(15,42,32,.12);--green:#1F8A5B;--bubble:#E4F0E8;color-scheme:light}
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px)}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.0625rem;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--sun);outline-offset:3px;border-radius:6px}
+::selection{background:var(--green);color:#06110D}
+.wrap{max-width:78rem;margin:0 auto;padding:0 clamp(1.1rem,4vw,2.5rem)}
+.eyebrow{display:inline-flex;align-items:center;gap:.55rem;font-size:.78rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.eyebrow::before{content:"";width:.55rem;height:.55rem;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,3.8rem);line-height:1.02;letter-spacing:-.04em;margin:1rem 0 0;max-width:16ch}
+h2 em,.s{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+.lede{color:var(--muted);max-width:34rem;margin:1.1rem 0 0;font-size:1.1rem}
+section{position:relative}
+body::after{content:"";position:fixed;inset:-50%;z-index:60;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.progress{position:fixed;top:0;left:0;height:2px;width:100%;z-index:70;background:linear-gradient(90deg,var(--green),var(--sun));transform-origin:0 50%;transform:scaleX(0);pointer-events:none}
+.loader{position:fixed;inset:0;z-index:100;background:#030A07;color:#E9F5EF;display:grid;place-items:center;padding:1.5rem;transition:opacity .7s var(--ease),visibility .7s}
+.loader.out{opacity:0;visibility:hidden}
+.loader .msg{display:flex;align-items:center;gap:.8rem;font-size:clamp(1.15rem,3vw,1.7rem);font-weight:500}
+.loader .av{flex:0 0 3rem;width:3rem;height:3rem;border-radius:50%;background:radial-gradient(circle at 35% 30%,#B7FFE0,#2BD98F 45%,#0B5A3A);box-shadow:0 0 40px rgba(43,217,143,.6);animation:breath 1.6s ease-in-out infinite}
+.loader .t::after{content:"";display:inline-block;width:.55em;height:1.05em;margin-left:.1em;vertical-align:-.15em;background:#2BD98F;animation:caret .8s steps(1) infinite}
+@keyframes caret{50%{opacity:0}}
+@keyframes breath{50%{transform:scale(1.08)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ring{position:fixed;left:0;top:0;z-index:90;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;pointer-events:none;opacity:0;border:1.5px solid var(--green);box-shadow:0 0 18px rgba(43,217,143,.35);transition:width .3s var(--ease),height .3s var(--ease),margin .3s var(--ease),background .3s,opacity .3s}
+.ring.on{opacity:1}
+.ring.big{width:70px;height:70px;margin:-35px 0 0 -35px;background:rgba(43,217,143,.12)}
+@media (pointer:coarse){.ring{display:none}}
+header.top{position:fixed;top:0;left:0;right:0;z-index:50;padding-top:env(safe-area-inset-top,0px);transition:transform .5s var(--ease)}
+header.top.solid{background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header.top.hide{transform:translateY(-110%)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;gap:1rem}
+.brand{display:flex;align-items:center;gap:.55rem;font-family:var(--display);font-weight:700;font-size:1.05rem;text-decoration:none;white-space:nowrap}
+.brand i{width:1.4rem;height:1.4rem;border-radius:50%;background:radial-gradient(circle at 35% 30%,#B7FFE0,#2BD98F 45%,#0B5A3A);box-shadow:0 0 14px rgba(43,217,143,.6);animation:breath 3s ease-in-out infinite}
+nav.links{display:flex;gap:1.8rem;font-weight:600;font-size:.95rem}
+nav.links a{text-decoration:none;color:var(--muted);position:relative}
+nav.links a::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;background:var(--green);transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease)}
+nav.links a:hover{color:var(--ink)} nav.links a:hover::after{transform:scaleX(1);transform-origin:left}
+@media (max-width:820px){nav.links{display:none}}
+.hdr-r{display:flex;gap:.6rem;align-items:center}
+@media (max-width:820px){.hdr-r .btn{display:none}}
+.menu-btn{display:none;font:inherit;font-weight:700;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:.55rem 1rem;cursor:pointer}
+@media (max-width:820px){.menu-btn{display:inline-flex}}
+.overlay{position:fixed;inset:0;z-index:80;background:#062A1C;color:#E9F5EF;display:flex;flex-direction:column;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 1.2rem) 1.4rem calc(env(safe-area-inset-bottom,0px) + 1.6rem);clip-path:circle(0% at calc(100% - 3rem) 2.4rem);transition:clip-path .8s var(--ease);visibility:hidden}
+.overlay.open{clip-path:circle(150% at calc(100% - 3rem) 2.4rem);visibility:visible}
+.overlay .top{display:flex;justify-content:space-between;align-items:center}
+.overlay .close{font:inherit;font-weight:700;border:1.5px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:999px;padding:.55rem 1rem;cursor:pointer}
+.overlay nav{display:grid;gap:.4rem}
+.overlay nav a{font-family:var(--display);font-weight:700;font-size:clamp(2.2rem,10vw,4.4rem);line-height:1.1;letter-spacing:-.04em;text-decoration:none;overflow:hidden;display:block}
+.overlay nav a span{display:inline-block;transform:translateY(110%);transition:transform .7s var(--ease)}
+.overlay.open nav a span{transform:none}
+.overlay.open nav a:nth-child(2) span{transition-delay:.06s}.overlay.open nav a:nth-child(3) span{transition-delay:.12s}.overlay.open nav a:nth-child(4) span{transition-delay:.18s}.overlay.open nav a:nth-child(5) span{transition-delay:.24s}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;border:0;border-radius:999px;padding:1rem 1.55rem;font:inherit;font-weight:700;text-decoration:none;cursor:pointer;overflow:hidden;isolation:isolate;transition:transform .35s var(--ease),box-shadow .35s}
+.btn::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;transform:translateY(101%);transition:transform .5s var(--ease)}
+.btn:hover::before{transform:none}
+.btn-main{background:var(--green);color:#03140D} .btn-main::before{background:var(--sun)} .btn-main:hover{box-shadow:0 10px 40px -10px rgba(43,217,143,.6)}
+.btn-ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)} .btn-ghost::before{background:var(--ink)} .btn-ghost:hover{color:var(--bg)}
+.btn .arr{display:inline-block;transition:transform .4s var(--ease)} .btn:hover .arr{transform:translateX(4px) rotate(-45deg)}
+.btn-sm{padding:.65rem 1.1rem;font-size:.93rem}
+.btn[disabled]{opacity:.6;cursor:wait}
+.hero{min-height:100svh;display:grid;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 6.5rem) 0 3rem;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;align-items:center;width:100%}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr}}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,6vw,5.2rem);line-height:1.02;letter-spacing:-.05em;margin:1.1rem 0 0}
+.hero h1 .g{background:linear-gradient(90deg,var(--green),var(--sun));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero h1 .s{font-weight:400;letter-spacing:-.02em}
+.hero .lede{font-size:clamp(1.05rem,1.5vw,1.2rem)}
+.chip{display:inline-flex;align-items:baseline;gap:.5rem;border:1.5px solid rgba(255,216,77,.5);border-radius:999px;padding:.45rem 1rem;font-weight:600;margin-top:1.4rem}
+.chip b{font-family:var(--display);color:var(--sun)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .chip b{color:#8A6A00}}
+.ctas{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.6rem}
+.js .fade{opacity:0;transform:translateY(18px)}
+.ready .fade{opacity:1;transform:none;transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.ready .fade.d1{transition-delay:.15s}.ready .fade.d2{transition-delay:.3s}.ready .fade.d3{transition-delay:.45s}
+.orbwrap{position:relative;aspect-ratio:1;width:min(100%,32rem);justify-self:center}
+@media (max-width:900px){.orbwrap{width:min(86vw,22rem);order:-1;margin-bottom:-.5rem}}
+.orb{position:absolute;inset:18%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#D8FFF0 0%,#5CF2B4 22%,#1FB377 45%,#0A5A3A 70%,#05281A 100%);box-shadow:0 0 80px rgba(43,217,143,.45),inset -20px -30px 60px rgba(0,0,0,.35);transition:transform .25s ease-out}
+.orb::before{content:"";position:absolute;inset:-14%;border-radius:50%;background:conic-gradient(from 0deg,transparent,rgba(43,217,143,.5),transparent 35%,rgba(255,216,77,.35),transparent 70%);filter:blur(18px);animation:spin 9s linear infinite;z-index:-1}
+.orb::after{content:"";position:absolute;inset:8%;border-radius:50%;background:radial-gradient(circle at 70% 75%,rgba(255,216,77,.35),transparent 40%);mix-blend-mode:screen;animation:breath 4s ease-in-out infinite}
+.orb.talk{animation:talk .35s ease-in-out infinite alternate}
+@keyframes talk{to{scale:1.05}}
+.ringline{position:absolute;inset:4%;border-radius:50%;border:1px dashed var(--line);animation:spin 40s linear infinite}
+.bub{position:absolute;max-width:13rem;padding:.6rem .9rem;border-radius:18px 18px 18px 6px;background:var(--card);border:1px solid var(--line);font-size:.92rem;font-weight:500;box-shadow:0 20px 40px -20px rgba(0,0,0,.6);opacity:0;transform:translateY(10px) scale(.96);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.bub.ans{border-radius:18px 18px 6px 18px;background:var(--green2);color:#fff;border-color:transparent}
+.bub.on{opacity:1;transform:none}
+@media (max-width:900px){.bub{font-size:.82rem;max-width:10.5rem}}
+.qbox{padding:clamp(3rem,7vw,5rem) 0 clamp(2rem,5vw,3rem);border-block:1px solid var(--line);background:var(--bg2)}
+.qbox .wrap{display:flex;justify-content:space-between;align-items:end;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.8rem}
+.qrow{overflow:hidden;padding:.45rem 0}
+.qtrack{display:flex;gap:.8rem;width:max-content;will-change:transform}
+.qtrack span{white-space:nowrap;border:1px solid var(--line);background:var(--bubble);border-radius:22px 22px 22px 6px;padding:.7rem 1.2rem;font-weight:600;font-size:clamp(.95rem,1.6vw,1.15rem)}
+.qtrack span:nth-child(3n){border-radius:22px 22px 6px 22px;background:transparent}
+.night{padding:clamp(5rem,10vw,8rem) 0}
+.night .wrap{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+@media (max-width:900px){.night .wrap{grid-template-columns:1fr;gap:2.5rem}}
+.live{font-family:var(--display);font-weight:800;font-size:clamp(4rem,12vw,9rem);line-height:.9;letter-spacing:-.06em;font-variant-numeric:tabular-nums;margin-top:1rem}
+.live small{display:block;font-family:var(--body);font-size:1rem;font-weight:600;letter-spacing:0;color:var(--muted);margin-top:.8rem}
+.live small b{color:var(--green)}
+.chat{background:var(--card);border:1px solid var(--line);border-radius:26px;box-shadow:0 40px 80px -40px rgba(0,0,0,.7);overflow:hidden;width:100%;max-width:27rem;justify-self:center}
+.chat-h{display:flex;align-items:center;gap:.7rem;padding:.95rem 1.1rem;border-bottom:1px solid var(--line)}
+.av{width:2.3rem;height:2.3rem;border-radius:50%;background:radial-gradient(circle at 35% 30%,#B7FFE0,#2BD98F 45%,#0B5A3A);flex:0 0 auto}
+.chat-h b{display:block;font-size:.98rem}
+.chat-h small{color:var(--green);font-weight:600;font-size:.8rem}
+.chat-h small::before{content:"";display:inline-block;width:.45rem;height:.45rem;border-radius:50%;background:var(--green);margin-right:.35rem;box-shadow:0 0 8px var(--green)}
+.clock{margin-left:auto;font-family:var(--display);font-size:.78rem;font-weight:700;background:var(--bubble);border-radius:999px;padding:.25rem .6rem;color:var(--muted)}
+.msgs{padding:1rem;display:flex;flex-direction:column;gap:.55rem;height:22rem;overflow:hidden;justify-content:flex-end}
+.m{max-width:84%;padding:.65rem .9rem;border-radius:18px;font-size:.96rem;line-height:1.45}
+.m.you{align-self:flex-end;background:var(--green2);color:#fff;border-bottom-right-radius:6px}
+.m.bot{align-self:flex-start;background:var(--bubble);border-bottom-left-radius:6px}
+.m.typing{display:flex;gap:.3rem;padding:.8rem .9rem}
+.m.typing i{width:.45rem;height:.45rem;border-radius:50%;background:var(--muted);opacity:.5;animation:blink 1s infinite}
+.m.typing i:nth-child(2){animation-delay:.15s}.m.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{50%{opacity:1;transform:translateY(-2px)}}
+.pop{animation:pop .3s ease-out both}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.chat-f{display:flex;gap:.5rem;padding:.8rem 1rem;border-top:1px solid var(--line)}
+.chat-f span{flex:1;background:var(--bubble);border-radius:999px;padding:.55rem .9rem;color:var(--muted);font-size:.9rem}
+.chat-f b{width:2.3rem;height:2.3rem;border-radius:50%;background:var(--green);display:grid;place-items:center;color:#03140D}
+.note{color:var(--muted);font-size:.88rem}
+.try{padding:clamp(5rem,10vw,8rem) 0;background:var(--bg2);border-block:1px solid var(--line);overflow:hidden}
+.try::before{content:"";position:absolute;width:40rem;height:40rem;right:-12rem;top:-10rem;border-radius:50%;background:radial-gradient(circle,rgba(43,217,143,.14),transparent 60%);pointer-events:none}
+.try .wrap{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;position:relative}
+@media (max-width:900px){.try .wrap{grid-template-columns:1fr;gap:2.5rem}}
+.trycol{width:100%;max-width:27rem;justify-self:center}
+.trycol .chat{max-width:none}
+.pickq{margin:1.1rem 0 0;font-weight:700;font-size:.92rem;color:var(--muted)}
+.qchips{display:flex;flex-wrap:wrap;gap:.55rem;margin:.6rem 0 .6rem}
+.mob-cta{display:none}
+@media (max-width:900px){.desk-cta{display:none}.mob-cta{display:block}.try .msgs{height:18rem}}
+.qchips button{font:inherit;font-weight:600;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px 20px 20px 6px;padding:.6rem 1rem;cursor:pointer;transition:border-color .2s,transform .3s var(--ease)}
+.qchips button:hover{border-color:var(--green);transform:translateY(-2px)}
+.qchips button[disabled]{opacity:.5;cursor:default;transform:none}
+.feat{padding:clamp(5rem,10vw,8rem) 0}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:3rem}
+@media (max-width:900px){.cards{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.cards{grid-template-columns:1fr}}
+.card{position:relative;border-radius:24px;padding:1.6rem;background:var(--card);border:1px solid var(--line);overflow:hidden;min-height:13rem;display:flex;flex-direction:column;justify-content:space-between;gap:1.2rem;transition:transform .5s var(--ease),border-color .3s}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%),rgba(43,217,143,.16),transparent 45%);opacity:0;transition:opacity .4s}
+.card:hover{transform:translateY(-5px);border-color:rgba(43,217,143,.4)} .card:hover::before{opacity:1}
+.card .ic{width:2.8rem;height:2.8rem;border-radius:14px;display:grid;place-items:center;background:rgba(43,217,143,.12);color:var(--green);font-size:1.2rem;font-weight:800}
+.card b{display:block;font-family:var(--display);font-weight:700;font-size:1.12rem;letter-spacing:-.02em;margin-bottom:.35rem}
+.card span{color:var(--muted)}
+.limits{padding:clamp(4rem,8vw,6rem) 0;border-block:1px solid var(--line)}
+.limits .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:4rem;align-items:start}
+@media (max-width:900px){.limits .wrap{grid-template-columns:1fr;gap:1.5rem}}
+.nolist{list-style:none;margin:0;padding:0;display:grid}
+.nolist li{padding:1.3rem 0;border-top:1px solid var(--line);display:grid;grid-template-columns:2.4rem 1fr;gap:.8rem;font-size:clamp(1.05rem,1.7vw,1.3rem);font-weight:500}
+.nolist li::before{content:"✓";width:2rem;height:2rem;border-radius:50%;display:grid;place-items:center;background:var(--green);color:#03140D;font-weight:800;font-size:1rem}
+.how{padding:clamp(5rem,10vw,8rem) 0}
+.path{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem}
+@media (max-width:760px){.path{grid-template-columns:1fr;gap:2.2rem;padding-left:2.4rem}}
+.path .pline{position:absolute;left:0;right:0;top:1.4rem;height:2px;background:var(--line)}
+.path .pline i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--sun));transform-origin:0 50%;transform:scaleX(0)}
+@media (max-width:760px){.path .pline{left:1.05rem;right:auto;top:0;bottom:0;width:2px;height:auto}.path .pline i{width:100%;height:100%;transform-origin:50% 0;transform:scaleY(0)}}
+.st{position:relative}
+.st .dot{width:2.8rem;height:2.8rem;border-radius:50%;display:grid;place-items:center;background:var(--bg);border:2px solid var(--green);color:var(--green);font-family:var(--display);font-weight:700;position:relative;z-index:1;transition:background .4s,color .4s,box-shadow .4s}
+.st.on .dot{background:var(--green);color:#03140D;box-shadow:0 0 24px rgba(43,217,143,.5)}
+@media (max-width:760px){.st .dot{position:absolute;left:-2.45rem;top:-.1rem;width:2.2rem;height:2.2rem;font-size:.85rem}}
+.st h3{font-family:var(--display);font-weight:700;font-size:1.3rem;letter-spacing:-.02em;margin:1.2rem 0 .4rem}
+@media (max-width:760px){.st h3{margin-top:0}}
+.st p{margin:0;color:var(--muted)}
+.price{padding:clamp(5rem,10vw,8rem) 0;background:var(--bg2);border-top:1px solid var(--line);overflow:hidden}
+.price .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:1.2rem;margin-top:3rem}
+@media (max-width:900px){.price .grid{grid-template-columns:1fr}}
+.pcard{position:relative;border-radius:30px;padding:clamp(1.6rem,3vw,2.4rem);border:1px solid var(--line);background:var(--card);overflow:hidden}
+.pcard.main{background:radial-gradient(120% 120% at 100% 0%,rgba(43,217,143,.3),transparent 55%),var(--card);border-color:rgba(43,217,143,.45)}
+.pcard .amt{font-family:var(--display);font-weight:800;font-size:clamp(4.5rem,11vw,8.5rem);line-height:.85;letter-spacing:-.07em;margin:1rem 0 .5rem}
+.pcard .amt small{font-size:.24em;letter-spacing:0;margin-left:.4rem;color:var(--muted)}
+.pcard h3{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0;letter-spacing:-.02em}
+.pcard ul{list-style:none;padding:0;margin:1.2rem 0 1.4rem;display:grid;gap:.55rem}
+.pcard li{padding-left:1.7rem;position:relative}
+.pcard li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
+.pcard .tag{display:inline-block;font-size:.76rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--sun);color:#1A1500;border-radius:999px;padding:.25rem .7rem}
+.extra{color:var(--muted);font-size:.93rem;margin:.4rem 0 1.2rem}
+.faq{padding:clamp(4rem,8vw,6rem) 0}
+.faq .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:4rem}
+@media (max-width:900px){.faq .wrap{grid-template-columns:1fr;gap:1.5rem}}
+.faq details{border-top:1px solid var(--line);padding:1.25rem 0}
+.faq details:last-child{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;font-weight:700;font-size:clamp(1.05rem,1.8vw,1.25rem);list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"";flex:0 0 1.9rem;height:1.9rem;border-radius:50%;border:1.5px solid var(--line);background:linear-gradient(var(--green),var(--green)) center/.8rem 1.5px no-repeat,linear-gradient(var(--green),var(--green)) center/1.5px .8rem no-repeat;transition:transform .4s var(--ease)}
+.faq details[open] summary::after{transform:rotate(135deg)}
+.faq details p{margin:.8rem 0 0;color:var(--muted);max-width:40rem}
+.contact{padding:clamp(5rem,10vw,8rem) 0;background:var(--bg2);border-top:1px solid var(--line)}
+.contact .wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:4rem}
+@media (max-width:900px){.contact .wrap{grid-template-columns:1fr;gap:2rem}}
+.formcard{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:clamp(1.3rem,3vw,2.2rem)}
+form{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media (max-width:560px){form{grid-template-columns:1fr}}
+.f{display:grid;gap:.4rem} .f.full{grid-column:1/-1}
+label{font-weight:600;font-size:.95rem} label small{color:var(--muted);font-weight:500}
+input,select,textarea{width:100%;font:inherit;font-size:1rem;padding:.85rem 1rem;border-radius:14px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 1.2rem) 55%,calc(100% - .85rem) 55%;background-size:.35rem .35rem;background-repeat:no-repeat;padding-right:2.4rem}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(43,217,143,.2)}
+textarea{min-height:7rem;resize:vertical}
+.chk{grid-column:1/-1;display:flex;gap:.6rem;align-items:flex-start;font-size:.93rem;color:var(--muted);font-weight:500}
+.chk input{width:1.15rem;height:1.15rem;margin-top:.2rem;accent-color:var(--green);flex:0 0 auto;padding:0}
+.terms{border:1px solid var(--line);border-radius:12px;padding:.7rem .9rem}
+.terms summary{cursor:pointer;font-weight:600}
+.terms p{margin:.5rem 0 0;color:var(--muted);font-size:.93rem;white-space:pre-line}
+.err{grid-column:1/-1;color:var(--err);font-weight:600;min-height:1.3em;margin:0}
+form .btn{grid-column:1/-1;justify-self:start;font-size:1.05rem}
+.sent{border:1.5px solid var(--green);border-radius:20px;padding:1.6rem}
+.sent h3{font-family:var(--display);font-size:1.4rem;margin:0 0 .4rem}
+.sent p{margin:.3rem 0;color:var(--muted)}
+.paybtn{margin:.8rem 0 .3rem}
+.small{font-size:.9rem;color:var(--muted)}
+.direct{margin-top:1.8rem;display:grid;gap:.5rem;font-weight:600}
+.direct a{text-decoration:none;color:var(--green)}
+.paid{position:fixed;left:0;right:0;top:0;z-index:75;background:var(--green);color:#03140D;padding:calc(env(safe-area-inset-top,0px) + .9rem) 0 .9rem;font-weight:600}
+footer{padding:4rem 0 calc(env(safe-area-inset-bottom,0px) + 2rem);overflow:hidden}
+.bigword{font-family:var(--display);font-weight:800;font-size:clamp(6rem,26vw,22rem);line-height:.85;letter-spacing:-.07em;margin:0;white-space:nowrap;color:transparent;-webkit-text-stroke:1.5px var(--line);background:linear-gradient(90deg,var(--green),var(--sun)) 0 0/0% 100% no-repeat;-webkit-background-clip:text;background-clip:text;transition:background-size 1.4s var(--ease)}
+.bigword.lit,.bigword:hover{background-size:100% 100%}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;color:var(--muted);font-size:.9rem;margin-top:2rem}
+.js [data-r]{opacity:0;transform:translateY(40px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.js [data-r].in{opacity:1;transform:none}
+.js [data-r="2"]{transition-delay:.1s}.js [data-r="3"]{transition-delay:.2s}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .js .fade,.js [data-r]{opacity:1!important;transform:none!important}
+  .bub{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader" aria-hidden="true"><div class="msg"><span class="av"></span><span class="t" id="lt"></span></div></div>
+<div class="progress" id="prog"></div>
+<div class="ring" id="ring"></div>
+
+<div class="paid" id="paid" role="status" hidden>
+  <div class="wrap"><b>Plata a fost primită. Mulțumesc!</b> Te contactez în curând ca să începem.</div>
+</div>
+
+<header class="top" id="hdr">
+  <div class="wrap">
+    <a class="brand" href="#top"><i aria-hidden="true"></i><span data-c="brand">RAI Solutions</span></a>
+    <nav class="links" aria-label="Meniu">
+      <a href="#incearca">Încearcă</a>
+      <a href="#ce-face">Ce face</a>
+      <a href="#cum">Cum funcționează</a>
+      <a href="#pret">Preț</a>
+    </nav>
+    <div class="hdr-r">
+      <a class="btn btn-main btn-sm mag" href="#cerere">Cere asistentul <span class="arr">→</span></a>
+      <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="overlay">Meniu</button>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Meniu">
+  <div class="top"><span class="brand" style="color:#fff"><i aria-hidden="true"></i>RAI</span><button class="close" id="menuClose" type="button">Închide</button></div>
+  <nav>
+    <a href="#incearca"><span>Încearcă</span></a>
+    <a href="#ce-face"><span>Ce face</span></a>
+    <a href="#cum"><span>Cum funcționează</span></a>
+    <a href="#pret"><span>Preț</span></a>
+    <a href="#cerere"><span>Contact</span></a>
+  </nav>
+  <p style="margin:0;opacity:.85">Asistent AI pentru site-ul tău. 300 lei, o singură dată.</p>
+</div>
+
+<main id="top">
+  <section class="hero" aria-labelledby="h1">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow fade">Online acum · răspunde în limba română</span>
+        <h1 id="h1" class="fade d1">Clienții tăi întreabă. <span class="g">Asistentul tău</span> <span class="s">răspunde,</span> oricând.</h1>
+        <p class="lede fade d2">Un chat inteligent pe site-ul tău, care știe programul, prețurile și serviciile tale. Răspunde pe loc, zi și noapte, iar tu primești datele clienților interesați.</p>
+        <div class="fade d3">
+          <span class="chip"><b>300 lei</b> o singură dată · fără abonament</span>
+          <div class="ctas">
+            <a class="btn btn-main mag" href="#incearca">Încearcă-l acum <span class="arr">→</span></a>
+            <a class="btn btn-ghost mag" href="#cerere" data-demo>Demo pentru afacerea mea</a>
+          </div>
+        </div>
+      </div>
+      <div class="orbwrap fade d2" id="orbwrap" aria-hidden="true">
+        <div class="ringline"></div>
+        <div class="orb" id="orb"></div>
+        <div class="bub" id="bq" style="left:-2%;top:10%"></div>
+        <div class="bub ans" id="ba" style="right:-2%;bottom:12%"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="qbox" aria-label="Întrebări pe care le primești">
+    <div class="wrap">
+      <div><span class="eyebrow">Sună cunoscut?</span><h2>Aceleași întrebări, <em>în fiecare zi.</em></h2></div>
+      <p class="lede" style="margin:0">Fiecare răspuns scris de mână îți ia timp. Un mesaj fără răspuns poate fi un client care a plecat la altcineva.</p>
+    </div>
+    <div class="qrow" aria-hidden="true"><div class="qtrack" id="q1"></div></div>
+    <div class="qrow" aria-hidden="true"><div class="qtrack" id="q2"></div></div>
+  </section>
+
+  <section class="night" aria-labelledby="h-night">
+    <div class="wrap">
+      <div data-r>
+        <span class="eyebrow">În timp ce tu dormi</span>
+        <div class="live"><span id="liveT">--:--</span><small>Ora din România acum. <b>Asistentul tău ar fi online.</b></small></div>
+        <h2 id="h-night" style="font-size:clamp(1.6rem,3.4vw,2.6rem);margin-top:1.6rem">Răspunde la 3 noaptea, <em>în weekend,</em> de sărbători.</h2>
+      </div>
+      <div class="chat" data-r="2" role="img" aria-label="Exemplu de conversație: un client întreabă noaptea, asistentul răspunde pe loc.">
+        <div class="chat-h"><div class="av" aria-hidden="true"></div><div><b>Asistentul afacerii</b><small>Online acum</small></div><span class="clock" id="clock">03:12</span></div>
+        <div class="msgs" id="msgs"></div>
+        <div class="chat-f" aria-hidden="true"><span>Scrie un mesaj…</span><b>➤</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="try" id="incearca" aria-labelledby="h-try">
+    <div class="wrap">
+      <div data-r>
+        <span class="eyebrow">Demo interactiv</span>
+        <h2 id="h-try">Încearcă-l <em>acum.</em></h2>
+        <p class="lede">Atinge o întrebare de sub chat și vezi cum răspunde un asistent pentru o pizzerie de exemplu. Asistentul tău va răspunde din informațiile afacerii tale.</p>
+        <p class="desk-cta" style="margin-top:1.6rem"><a class="btn btn-main mag" href="#cerere" data-demo>Vreau demo-ul pentru afacerea mea <span class="arr">→</span></a></p>
+      </div>
+      <div class="trycol" data-r="2">
+        <div class="chat" aria-live="polite">
+          <div class="chat-h"><div class="av" aria-hidden="true"></div><div><b>Pizzeria Exemplu</b><small>Online acum</small></div></div>
+          <div class="msgs" id="tryMsgs"><div class="m bot">Bună! Sunt asistentul Pizzeriei Exemplu. Cu ce te pot ajuta?</div></div>
+        </div>
+        <p class="pickq">Alege o întrebare:</p>
+        <div class="qchips" id="qchips"></div>
+        <p class="note">Demo cu răspunsuri pregătite dinainte, pentru „Pizzeria Exemplu”.</p>
+        <p class="mob-cta" style="margin-top:1.2rem"><a class="btn btn-main" href="#cerere" data-demo>Vreau demo-ul pentru afacerea mea <span class="arr">→</span></a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="feat" id="ce-face" aria-labelledby="h-does">
+    <div class="wrap">
+      <span class="eyebrow">Ce face</span>
+      <h2 id="h-does">Un coleg care nu doarme <em>niciodată.</em></h2>
+      <div class="cards">
+        <article class="card" data-r><div class="ic">⚡</div><div><b>Răspunde pe loc</b><span>Noaptea, în weekend sau când ești ocupat cu clienții din fața ta.</span></div></article>
+        <article class="card" data-r="2"><div class="ic">≡</div><div><b>Știe afacerea ta</b><span>Program, prețuri, servicii, adresă și întrebările pe care le primești des.</span></div></article>
+        <article class="card" data-r="3"><div class="ic">☎</div><div><b>Strânge contacte</b><span>Nume și telefon de la clienții interesați, ca să-i suni tu înapoi.</span></div></article>
+        <article class="card" data-r><div class="ic">↪</div><div><b>Trimite la tine</b><span>Pentru cereri speciale, îi arată clientului WhatsApp-ul sau telefonul tău.</span></div></article>
+        <article class="card" data-r="2"><div class="ic">RO</div><div><b>Vorbește românește</b><span>Natural, pe tonul potrivit afacerii tale.</span></div></article>
+        <article class="card" data-r="3"><div class="ic">◐</div><div><b>Stă pe site-ul tău</b><span>Un buton de chat discret, în colțul paginii.</span></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="limits" aria-labelledby="h-lim">
+    <div class="wrap">
+      <div><span class="eyebrow">Spus direct</span><h2 id="h-lim">Ce <em>nu</em> face.</h2></div>
+      <ul class="nolist">
+        <li data-r>Nu înlocuiește oamenii. Îi scapă de întrebările repetitive.</li>
+        <li data-r="2">Nu inventează prețuri sau promisiuni: răspunde doar din informațiile pe care i le dai.</li>
+        <li data-r="3">Când nu știe ceva, spune asta și trimite clientul la tine.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="how" id="cum" aria-labelledby="h-how">
+    <div class="wrap">
+      <span class="eyebrow">Cum funcționează</span>
+      <h2 id="h-how">Gata în trei <em>pași.</em></h2>
+      <div class="path" id="path">
+        <div class="pline"><i id="pathLine"></i></div>
+        <div class="st"><div class="dot">1</div><h3>Îmi trimiți informațiile</h3><p>Program, prețuri, servicii și întrebările pe care le primești cel mai des.</p></div>
+        <div class="st"><div class="dot">2</div><h3>Configurez asistentul</h3><p>Îl învăț despre afacerea ta și îl testăm împreună cu întrebări reale.</p></div>
+        <div class="st"><div class="dot">3</div><h3>Îl pun pe site</h3><p>Apare butonul de chat și clienții pot începe să întrebe.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="price" id="pret" aria-labelledby="h-price">
+    <div class="wrap">
+      <span class="eyebrow">Preț</span>
+      <h2 id="h-price">Plătești o singură <em>dată.</em></h2>
+      <div class="grid">
+        <article class="pcard main" data-r>
+          <h3>Asistent AI</h3>
+          <div class="amt">300<small>lei</small></div>
+          <ul id="pkg"></ul>
+          <p class="extra" id="extra"></p>
+          <a class="btn btn-main" href="#cerere" data-pick="Asistent AI pentru site-ul meu (300 lei)">Comandă asistentul <span class="arr">→</span></a>
+        </article>
+        <article class="pcard" data-r="2">
+          <span class="tag">Economisești 100 lei</span>
+          <h3 style="margin-top:1rem">Asistent AI + site nou</h3>
+          <div class="amt" style="font-size:clamp(3.4rem,7vw,5.5rem)">700<small>lei</small></div>
+          <p class="note" style="margin:0 0 1.4rem">N-ai site? Primești un site nou de la OHI Solutions, cu asistentul deja instalat.</p>
+          <a class="btn btn-ghost" href="#cerere" data-pick="Asistent AI + site nou (700 lei)">Alege pachetul <span class="arr">→</span></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq" id="intrebari" aria-labelledby="h-faq">
+    <div class="wrap">
+      <div><span class="eyebrow">Întrebări</span><h2 id="h-faq">Întrebări puse <em>des.</em></h2></div>
+      <div id="faq"></div>
+    </div>
+  </section>
+
+  <section class="contact" id="cerere" aria-labelledby="h-form">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">Contact</span>
+        <h2 id="h-form">Cere asistentul <em>tău.</em></h2>
+        <p class="lede">Lasă-mi datele și te contactez ca să-ți arăt cum ar arăta pentru afacerea ta.</p>
+        <div class="direct" id="direct"></div>
+      </div>
+      <div class="formcard">
+        <form id="form" novalidate>
+          <div class="f"><label for="n">Numele tău</label><input id="n" name="name" autocomplete="name"></div>
+          <div class="f"><label for="b">Numele afacerii</label><input id="b" name="business" autocomplete="organization"></div>
+          <div class="f"><label for="p">Telefon</label><input id="p" name="phone" type="tel" inputmode="tel" autocomplete="tel"></div>
+          <div class="f"><label for="e">Email <small>(opțional)</small></label><input id="e" name="email" type="email" autocomplete="email"></div>
+          <div class="f"><label for="s">Site-ul tău <small>(dacă ai)</small></label><input id="s" name="website" inputmode="url" placeholder="afacereata.ro"></div>
+          <div class="f"><label for="w">De ce ai nevoie</label>
+            <select id="w" name="need">
+              <option value="">Alege</option>
+              <option>Asistent AI pentru site-ul meu (300 lei)</option>
+              <option>Asistent AI + site nou (700 lei)</option>
+              <option>Vreau un demo gratuit pentru afacerea mea</option>
+            </select></div>
+          <div class="f full"><label for="m">Ce întrebări primești cel mai des? <small>(opțional)</small></label><textarea id="m" name="message" placeholder="De exemplu: program, prețuri, livrare, rezervări…"></textarea></div>
+          <label class="chk"><input type="checkbox" id="ok"> <span id="okTxt">Sunt de acord să fiu contactat în legătură cu această cerere.</span></label>
+          <details class="terms f full" id="termsBox" hidden><summary>Termeni și rambursare</summary><p id="termsText"></p></details>
+          <p class="err" id="err" role="alert"></p>
+          <button class="btn btn-main" id="send" type="submit">Trimite cererea</button>
+        </form>
+        <div class="sent" id="sent" hidden>
+          <div id="payStep" hidden>
+            <h3>Ultimul pas: plata</h3>
+            <p>Datele tale au fost trimise. Plătește <span id="payAmt">300</span> lei cu cardul ca să începem.</p>
+            <a class="btn btn-main paybtn" id="payBtn" href="#" rel="noopener"><span>Plătește <span id="payAmt2">300</span> lei cu cardul</span></a>
+            <p class="small">Plata e procesată în siguranță de Stripe. Primești confirmarea pe email.</p>
+            <p class="small" id="bundleNote" hidden></p>
+          </div>
+          <div id="talkStep" hidden>
+            <h3>Cererea a fost trimisă</h3>
+            <p>Te contactez în cel mai scurt timp la numărul lăsat.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="bigword" id="bigword" aria-hidden="true">RAI.</p>
+    <div class="foot"><span>© <span id="yr"></span> <span data-c="brand">RAI Solutions</span></span><span>Asistenți AI pentru afaceri locale · <a href="#cerere">Contact</a></span></div>
+  </div>
+</footer>
+
+<script>
+/* ================= EDITEAZĂ AICI ================= */
+const CONFIG = {
+  brand: "RAI Solutions",
+  phone: "",            // ex. "+40712345678"
+  email: "",            // ex. "contact@firma.ro"
+  webhookUrl: "https://hook.eu2.make.com/n1ym2ll23a96wcmq6511olrgeb49kplk",
+  // Stripe Payment Links (lasă "" ca să nu ceri plată online).
+  // Pachetul „site + asistent” folosește același link de 700 lei ca pe site-ul OHI.
+  paymentLinks: {
+    "Asistent AI pentru site-ul meu (300 lei)": "https://buy.stripe.com/fZu00c5vi0m789VdQkb7y00",
+    "Asistent AI + site nou (700 lei)": "https://buy.stripe.com/eVq7sFbYuaWK6qff7QeUU01"
+  },
+  // În Stripe: după plată, redirecționare către adresa site-ului + "?platit=1"
+  terms: "",            // textul tău de termeni și rambursare
+  package: [
+    "Configurarea asistentului cu informațiile afacerii tale",
+    "Instalarea butonului de chat pe site-ul tău",
+    "Testare împreună înainte de lansare",
+    "Instrucțiuni simple ca să știi cum funcționează"
+  ],
+  extra: "Dacă asistentul folosește un serviciu AI plătit, costul de utilizare îl plătești direct furnizorului. Îți spun exact cât înainte să începem.",
+  faq: [
+    ["Pot vedea cum ar arăta pentru afacerea mea?", "Da. Alege „Vreau un demo gratuit” în formular și îți pregătesc un demo cu informațiile afacerii tale. Dacă îți place, îți trimit linkul de plată."],
+    ["Există costuri lunare?", "Nu plătești abonament la mine. Asistentul poate avea un cost de utilizare la furnizorul de AI, în funcție de câte conversații are. Îți spun estimarea înainte să începem, ca să decizi informat."],
+    ["Am nevoie de un site?", "Da, asistentul se pune pe un site. Dacă nu ai, poți lua pachetul site nou + asistent AI de la OHI Solutions cu 700 lei în loc de 800."],
+    ["Poate greși?", "Poate, ca orice AI. De aceea îl configurăm să răspundă doar din informațiile tale și să trimită clientul la tine când nu e sigur."],
+    ["Pot schimba informațiile mai târziu?", "Da. Când se schimbă programul sau prețurile, asistentul trebuie actualizat. Stabilim împreună cum."],
+    ["Ce se întâmplă cu datele clienților?", "Datele lăsate de clienți în chat ajung la tine. Pe site trebuie să ai o politică de confidențialitate care explică asta."]
+  ]
+};
+/* ================================================== */
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const FINE = matchMedia("(pointer: fine)").matches;
+const wait = ms => new Promise(r => setTimeout(r, REDUCED ? 0 : ms));
+document.documentElement.classList.add("js");
+
+/* content from CONFIG */
+document.querySelectorAll('[data-c="brand"]').forEach(el => el.textContent = CONFIG.brand);
+$("#yr").textContent = new Date().getFullYear();
+$("#pkg").innerHTML = CONFIG.package.map(t => `<li>${esc(t)}</li>`).join("");
+$("#extra").textContent = CONFIG.extra;
+$("#faq").innerHTML = CONFIG.faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("");
+const digits = CONFIG.phone.replace(/[^\d]/g, "");
+$("#direct").innerHTML = [
+  CONFIG.phone ? `<a href="tel:${esc(CONFIG.phone)}">Sună: ${esc(CONFIG.phone)}</a>` : "",
+  digits ? `<a href="https://wa.me/${digits}" target="_blank" rel="noopener">Scrie pe WhatsApp</a>` : "",
+  CONFIG.email ? `<a href="mailto:${esc(CONFIG.email)}">${esc(CONFIG.email)}</a>` : ""
+].join("");
+
+/* preloader: the assistant types a hello (first visit only) */
+function startPage(){ document.documentElement.classList.add("ready"); }
+(async function(){
+  const L = $("#loader");
+  let seen = false; try { seen = sessionStorage.getItem("rai_seen") === "1"; } catch (e) {}
+  if (REDUCED || seen) { L.remove(); startPage(); return; }
+  try { sessionStorage.setItem("rai_seen", "1"); } catch (e) {}
+  const txt = "Bună! Cu ce te pot ajuta?", t = $("#lt");
+  await wait(250);
+  for (let i = 1; i <= txt.length; i++) { t.textContent = txt.slice(0, i); await wait(32); }
+  await wait(450);
+  L.classList.add("out"); startPage(); setTimeout(() => L.remove(), 800);
+})();
+
+/* hero orb: follows the pointer and "answers" floating questions */
+(function(){
+  const orb = $("#orb"), wrapEl = $("#orbwrap"), bq = $("#bq"), ba = $("#ba");
+  const QA = [
+    ["Aveți program duminică?", "Da, între 12:00 și 22:00."],
+    ["Cât costă o tunsoare?", "Tunsoarea bărbați: 60 lei."],
+    ["Faceți livrare?", "Da, în tot orașul."],
+    ["Aveți loc mâine seară?", "Lasă-mi numărul și te sunăm."],
+    ["Acceptați card?", "Da, card și numerar."]
+  ];
+  if (FINE && !REDUCED) {
+    addEventListener("pointermove", e => {
+      const r = wrapEl.getBoundingClientRect();
+      const x = (e.clientX - (r.left + r.width / 2)) / innerWidth, y = (e.clientY - (r.top + r.height / 2)) / innerHeight;
+      orb.style.transform = `translate(${x * 30}px,${y * 30}px)`;
+    });
+  }
+  if (REDUCED) { bq.textContent = QA[0][0]; ba.textContent = QA[0][1]; bq.classList.add("on"); ba.classList.add("on"); return; }
+  let i = 0;
+  (async function loop(){
+    await wait(1600);
+    for (;;) {
+      const [q, a] = QA[i % QA.length];
+      bq.textContent = q; bq.classList.add("on");
+      await wait(900);
+      orb.classList.add("talk"); await wait(900); orb.classList.remove("talk");
+      ba.textContent = a; ba.classList.add("on");
+      await wait(2600);
+      bq.classList.remove("on"); ba.classList.remove("on");
+      await wait(700); i++;
+    }
+  })();
+})();
+
+/* question marquees */
+const QS = ["Aveți program duminică?","Cât costă?","Faceți livrare?","Unde vă găsesc?","Aveți loc mâine seară?","Acceptați card?","Cât durează?","Aveți parcare?","Pot plăti la livrare?","Faceți programări?","Aveți meniu vegetarian?","Lucrați și sâmbăta?"];
+(function(){
+  const fill = (el, list) => { const h = list.map(q => `<span>${esc(q)}</span>`).join(""); el.innerHTML = h + h; };
+  fill($("#q1"), QS); fill($("#q2"), QS.slice().reverse());
+})();
+
+/* live Romania clock */
+(function(){
+  const el = $("#liveT");
+  const f = () => { el.textContent = new Intl.DateTimeFormat("ro-RO", { timeZone:"Europe/Bucharest", hour:"2-digit", minute:"2-digit", hourCycle:"h23" }).format(new Date()); };
+  f(); setInterval(f, 15000);
+})();
+
+/* auto chat (night) */
+const SCRIPT = [
+  ["you", "Bună! Mai faceți livrare acum?", "03:12"],
+  ["bot", "Bună! Da, livrăm până la 04:00. Livrarea în centru e gratuită la comenzi peste 60 lei."],
+  ["you", "Super. Aveți pizza fără gluten?", "03:13"],
+  ["bot", "Avem blat fără gluten pentru Margherita și Quattro Formaggi. Vrei să-ți trimit linkul de comandă?"],
+  ["you", "Da, te rog!", "03:13"],
+  ["bot", "Poftim: comandă aici. Poftă bună!"]
+];
+(function(){
+  const box = $("#msgs");
+  const add = (who, text) => { const d = document.createElement("div"); d.className = "m " + who + " pop"; d.textContent = text; box.appendChild(d); while (box.children.length > 6) box.removeChild(box.firstChild); return d; };
+  async function play(){
+    for (;;) {
+      box.innerHTML = "";
+      for (const [who, text, time] of SCRIPT) {
+        if (time) $("#clock").textContent = time;
+        if (who === "bot") { const t = add("bot typing", ""); t.innerHTML = "<i></i><i></i><i></i>"; await wait(1100); t.remove(); }
+        else await wait(900);
+        add(who, text);
+        await wait(who === "bot" ? 1600 : 500);
+      }
+      await wait(4500);
+    }
+  }
+  if (REDUCED || !("IntersectionObserver" in window)) { SCRIPT.slice(0, 4).forEach(([w, t]) => add(w, t).classList.remove("pop")); return; }
+  const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { play(); io.disconnect(); } }, { threshold:.3 });
+  io.observe(box);
+})();
+
+/* try-it demo: prepared answers for an example pizzeria */
+const TRY = [
+  ["Aveți program duminică?", "Da! Duminica suntem deschiși între 12:00 și 22:00. Vrei să comanzi acum?"],
+  ["Faceți livrare?", "Livrăm în tot orașul. În centru livrarea e gratuită la comenzi peste 60 lei, în rest costă 10 lei."],
+  ["Aveți pizza vegetariană?", "Da: Vegetariana, Margherita și Funghi. Pe toate le putem face și cu blat fără gluten."],
+  ["Pot rezerva o masă?", "Sigur! Pentru câte persoane și la ce oră? Lasă-mi și un număr de telefon ca să-ți confirmăm rezervarea."],
+  ["Cât costă o pizza mare?", "Pizzele mari costă între 42 și 58 lei. Îți trimit meniul complet?"]
+];
+(function(){
+  const box = $("#tryMsgs"), chips = $("#qchips");
+  let busy = false;
+  chips.innerHTML = TRY.map(([q], i) => `<button type="button" data-q="${i}">${esc(q)}</button>`).join("");
+  const add = (cls, text) => { const d = document.createElement("div"); d.className = "m " + cls + " pop"; d.textContent = text; box.appendChild(d); while (box.children.length > 7) box.removeChild(box.firstChild); return d; };
+  chips.addEventListener("click", async e => {
+    const b = e.target.closest("[data-q]"); if (!b || busy) return;
+    busy = true; chips.querySelectorAll("button").forEach(x => x.disabled = true);
+    const [q, a] = TRY[+b.dataset.q];
+    add("you", q);
+    const t = add("bot typing", ""); t.innerHTML = "<i></i><i></i><i></i>";
+    await wait(900); t.remove(); add("bot", a);
+    busy = false; chips.querySelectorAll("button").forEach(x => x.disabled = false);
+  });
+})();
+
+/* scroll loop: progress, header, marquees, steps line */
+(function(){
+  const prog = $("#prog"), hdr = $("#hdr"), q1 = $("#q1"), q2 = $("#q2"), path = $("#path"), pl = $("#pathLine"), sts = [...document.querySelectorAll(".st")];
+  let lastY = scrollY, x1 = 0, x2 = null, vel = 0;
+  const mobile = () => innerWidth <= 760;
+  function frame(){
+    const y = scrollY, max = document.documentElement.scrollHeight - innerHeight, dy = y - lastY; lastY = y;
+    prog.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+    hdr.classList.toggle("solid", y > 40);
+    if (dy > 4 && y > 300 && !document.body.classList.contains("menu-open")) hdr.classList.add("hide");
+    if (dy < -4) hdr.classList.remove("hide");
+    if (!REDUCED) {
+      vel += (Math.min(40, Math.abs(dy)) - vel) * .1;
+      const h1 = q1.scrollWidth / 2, h2 = q2.scrollWidth / 2, sp = .5 + vel * .2;
+      if (x2 === null) x2 = -h2;
+      x1 -= sp; if (x1 < -h1) x1 += h1;
+      x2 += sp; if (x2 > 0) x2 -= h2;
+      q1.style.transform = `translate3d(${x1}px,0,0)`; q2.style.transform = `translate3d(${x2}px,0,0)`;
+    }
+    const r = path.getBoundingClientRect();
+    const p = REDUCED ? 1 : Math.min(1, Math.max(0, (innerHeight * .8 - r.top) / (r.height + innerHeight * .2)));
+    pl.style.transform = mobile() ? `scaleY(${p})` : `scaleX(${p})`;
+    sts.forEach((s, i) => s.classList.toggle("on", p >= (i + .5) / sts.length - .05 || p > .98));
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* reveal + footer word */
+(function(){
+  const els = document.querySelectorAll("[data-r]");
+  if (REDUCED || !("IntersectionObserver" in window)) els.forEach(e => e.classList.add("in"));
+  else { const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold:.15, rootMargin:"0px 0px -8% 0px" }); els.forEach(e => io.observe(e)); }
+  const bw = $("#bigword");
+  if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => bw.classList.toggle("lit", e.isIntersecting)), { threshold:.6 }).observe(bw);
+})();
+
+/* cursor ring, magnetic buttons, card glow */
+(function(){
+  if (!FINE || REDUCED) return;
+  const ring = $("#ring"); let x = innerWidth / 2, y = innerHeight / 2, rx = x, ry = y;
+  addEventListener("pointermove", e => { x = e.clientX; y = e.clientY; ring.classList.add("on"); });
+  document.addEventListener("pointerleave", () => ring.classList.remove("on"));
+  (function loop(){ rx += (x - rx) * .18; ry += (y - ry) * .18; ring.style.transform = `translate3d(${rx}px,${ry}px,0)`; requestAnimationFrame(loop); })();
+  document.querySelectorAll("a,button,summary,select,input,textarea").forEach(el => {
+    el.addEventListener("pointerenter", () => ring.classList.add("big"));
+    el.addEventListener("pointerleave", () => ring.classList.remove("big"));
+  });
+  document.querySelectorAll(".mag").forEach(b => {
+    b.addEventListener("pointermove", e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .25}px,${(e.clientY - r.top - r.height / 2) * .35}px)`; });
+    b.addEventListener("pointerleave", () => b.style.transform = "");
+  });
+  document.querySelectorAll(".card").forEach(c => c.addEventListener("pointermove", e => { const r = c.getBoundingClientRect(); c.style.setProperty("--mx", (e.clientX - r.left) + "px"); c.style.setProperty("--my", (e.clientY - r.top) + "px"); }));
+})();
+
+/* mobile menu */
+(function(){
+  const ov = $("#overlay"), btn = $("#menuBtn");
+  const set = open => { ov.classList.toggle("open", open); btn.setAttribute("aria-expanded", String(open)); document.body.classList.toggle("menu-open", open); if (open) $("#menuClose").focus(); };
+  btn.addEventListener("click", () => set(true));
+  $("#menuClose").addEventListener("click", () => set(false));
+  ov.querySelectorAll("a").forEach(a => a.addEventListener("click", () => set(false)));
+  addEventListener("keydown", e => { if (e.key === "Escape") set(false); });
+})();
+
+/* form and payment */
+const linkFor = need => (CONFIG.paymentLinks || {})[need] || "";
+const sendLabel = () => linkFor($("#w").value) ? "Continuă la plată" : "Trimite cererea";
+function pick(v){ $("#w").value = v; $("#w").dispatchEvent(new Event("change")); }
+document.querySelectorAll("[data-demo]").forEach(a => a.addEventListener("click", () => pick("Vreau un demo gratuit pentru afacerea mea")));
+document.querySelectorAll("[data-pick]").forEach(a => a.addEventListener("click", () => pick(a.dataset.pick)));
+$("#w").addEventListener("change", () => $("#send").textContent = sendLabel());
+if (CONFIG.terms) { $("#termsBox").hidden = false; $("#termsText").textContent = CONFIG.terms; $("#okTxt").textContent = "Sunt de acord să fiu contactat și am citit termenii și condițiile de rambursare."; }
+if (new URLSearchParams(location.search).get("platit") === "1") $("#paid").hidden = false;
+
+$("#form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.target, err = $("#err");
+  const need = [["n","Scrie-ți numele."],["b","Scrie numele afacerii."],["p","Lasă un număr de telefon ca să te pot suna."],["w","Alege de ce ai nevoie."]];
+  for (const [id, msg] of need) { if (!$("#" + id).value.trim()) { err.textContent = msg; $("#" + id).focus(); return; } }
+  if ($("#p").value.replace(/[^\d]/g, "").length < 9) { err.textContent = "Numărul de telefon pare incomplet."; $("#p").focus(); return; }
+  if (!$("#ok").checked) { err.textContent = "Bifează acordul ca să te pot contacta."; return; }
+  err.textContent = "";
+  const data = new URLSearchParams(new FormData(f));
+  data.set("source", "asistent-ai-300");
+  data.set("created_at", new Date().toISOString());
+  const b = $("#send"); b.disabled = true; b.textContent = "Se trimite…";
+  const reqId = "REQ-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+  data.set("request_id", reqId);
+  try {
+    if (!CONFIG.webhookUrl) throw new Error("no webhook");
+    await fetch(CONFIG.webhookUrl, { method:"POST", mode:"no-cors", body:data });
+    f.hidden = true; $("#sent").hidden = false;
+    const needV = $("#w").value, link = linkFor(needV), pays = !!link;
+    $("#payStep").hidden = !pays; $("#talkStep").hidden = !!pays;
+    if (pays) {
+      const amt = (needV.match(/(\d+) lei/) || [, ""])[1];
+      $("#payAmt").textContent = amt; $("#payAmt2").textContent = amt;
+      const u = new URL(link);
+      u.searchParams.set("client_reference_id", reqId);
+      const em = $("#e").value.trim(); if (em) u.searchParams.set("prefilled_email", em);
+      $("#payBtn").href = u.toString();
+    }
+    $("#sent").scrollIntoView({ block:"center" });
+  } catch (x) {
+    err.textContent = "Cererea nu a putut fi trimisă. Încearcă din nou sau contactează-mă direct.";
+  } finally { b.disabled = false; b.textContent = sendLabel(); }
+});
+</script>
+</body>
+</html>

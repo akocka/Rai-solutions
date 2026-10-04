@@ -1,0 +1,26 @@
+/* RAI dark theme for the Convocore chat window (experiment).
+   Convocore's chat is built with "NextUI" colour variables (--vg-nextui-*).
+   Values are "hue saturation% lightness%". To undo: remove "/rai-chat.css" from VG_CONFIG.stylesheets. */
+.vg-render-container,
+.vg-render-container [data-theme],
+.vg-render-container .light,
+.vg-render-container .dark {
+  --vg-nextui-background: 158 48% 5% !important;     /* #06110D page dark */
+  --vg-nextui-foreground: 150 38% 94% !important;    /* #E9F5EF text */
+  --vg-nextui-content1: 157 39% 9% !important;       /* cards / panels */
+  --vg-nextui-content2: 154 39% 12% !important;
+  --vg-nextui-content3: 154 37% 15% !important;
+  --vg-nextui-content4: 154 34% 19% !important;
+  --vg-nextui-default-50: 158 40% 7% !important;
+  --vg-nextui-default-100: 156 34% 11% !important;
+  --vg-nextui-default-200: 155 28% 17% !important;
+  --vg-nextui-default-300: 154 22% 25% !important;
+  --vg-nextui-default-400: 152 16% 40% !important;
+  --vg-nextui-default-500: 150 14% 55% !important;
+  --vg-nextui-foreground-500: 152 22% 63% !important;
+  --vg-nextui-divider: 150 38% 94% !important;
+  --vg-nextui-divider-opacity: 0.12 !important;
+  --vg-nextui-primary: 153 69% 51% !important;       /* #2BD98F green accent */
+  --vg-nextui-primary-foreground: 158 70% 6% !important;
+}
+.vg-render-container { font-family: "Onest", system-ui, -apple-system, "Segoe UI", sans-serif !important; }

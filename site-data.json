@@ -1,0 +1,10 @@
+{
+  "prices": {
+    "setup": "300",
+    "setup_std": "699",
+    "monthly": "99,99"
+  },
+  "stripe": {
+    "rai": "https://buy.stripe.com/9B6fZa3na7Oz61NaE8b7y01"
+  }
+}

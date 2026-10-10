@@ -825,6 +825,36 @@ $("#form").addEventListener("submit", async e => {
 /* while the chat is open on a phone, hide the page behind it so no page content shows above the keyboard */
 html.rai-chat-open,html.rai-chat-open body{overflow:hidden!important;background:#06110D!important}
 html.rai-chat-open body > *:not(#VG_OVERLAY_CONTAINER):not(.vg-render-container):not(script):not(style){visibility:hidden!important}
+/* ---- RAI chat window effects: pop-in, living aurora, glowing frame, animated messages ---- */
+@property --rai-h{syntax:"<number>";inherits:true;initial-value:158}
+@keyframes raiHue{0%,100%{--rai-h:158}33%{--rai-h:172}66%{--rai-h:146}}
+html.rai-open .vg-render-container,html.rai-open .vg-render-container [data-theme],html.rai-open .vg-render-container .dark,html.rai-open .vg-render-container .light{animation:raiHue 14s ease-in-out infinite;--vg-nextui-background:var(--rai-h) 48% 5% !important;--vg-nextui-content1:var(--rai-h) 39% 9% !important;--vg-nextui-content2:var(--rai-h) 39% 12% !important}
+.rai-pop{animation:raiPop .7s cubic-bezier(.2,.9,.25,1.15) backwards!important;transform-origin:bottom right}
+@keyframes raiPop{0%{opacity:0;transform:translateY(24px) scale(.9);filter:blur(10px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+.rai-in{animation:raiIn .5s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes raiIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.rai-glow,.rai-aura{position:fixed;pointer-events:none;opacity:0;transition:opacity .5s ease}
+.rai-glow.on,.rai-aura.on{opacity:1}
+.rai-glow{z-index:2147482980;padding:2px;-webkit-mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.rai-glow::before{content:"";position:absolute;inset:-60%;background:conic-gradient(from 0deg,#2BD98F,#3FD0E8,#FFD84D,#B98CFF,#2BD98F);animation:raiSpinBg 6s linear infinite}
+.rai-glow-soft{position:fixed;z-index:2147482979;pointer-events:none;opacity:0;transition:opacity .6s ease;box-shadow:0 0 50px 4px rgba(43,217,143,.35),0 0 120px 10px rgba(63,208,232,.18)}
+.rai-glow-soft.on{opacity:1}
+@keyframes raiSpinBg{to{transform:rotate(360deg)}}
+.rai-aura{z-index:2147483646;overflow:hidden;mix-blend-mode:screen}
+.rai-aura.on{opacity:.2}
+@media (max-width:760px){.rai-aura.on{opacity:.2}}
+.rai-aura i{position:absolute;width:70%;aspect-ratio:1;border-radius:50%;filter:blur(40px)}
+.rai-aura .a1{background:#2BD98F;left:-20%;top:-15%;animation:raiDrift1 11s ease-in-out infinite}
+.rai-aura .a2{background:#3FD0E8;right:-25%;top:30%;animation:raiDrift2 13s ease-in-out infinite}
+.rai-aura .a3{background:#B98CFF;left:10%;bottom:-30%;animation:raiDrift3 15s ease-in-out infinite}
+.rai-aura .a4{background:#FFD84D;width:35%;right:5%;top:-10%;opacity:.7;animation:raiDrift1 9s ease-in-out infinite reverse}
+.rai-aura .shine{position:absolute;left:0;right:0;top:0;height:2px;width:auto;aspect-ratio:auto;border-radius:0;filter:none;background:linear-gradient(90deg,transparent,#fff,transparent);animation:raiShine 4s ease-in-out infinite}
+.rai-aura.burst{opacity:.55!important;transition:opacity .2s}
+@keyframes raiDrift1{50%{transform:translate(35%,25%) scale(1.15)}}
+@keyframes raiDrift2{50%{transform:translate(-40%,-20%) scale(.9)}}
+@keyframes raiDrift3{50%{transform:translate(25%,-35%) scale(1.2)}}
+@keyframes raiShine{0%{transform:translateX(-100%)}60%,100%{transform:translateX(100%)}}
+@media (prefers-reduced-motion: reduce){.rai-pop,.rai-in,.rai-aura i,.rai-glow::before{animation:none!important}}
 </style>
 <script>
 /* Finds the chat button Convocore draws, then adds a glow behind it and a small greeting bubble. Never changes the chat itself. */
@@ -835,7 +865,38 @@ html.rai-chat-open body > *:not(#VG_OVERLAY_CONTAINER):not(.vg-render-container)
   const roots = () => document.querySelectorAll("#VG_OVERLAY_CONTAINER, .vg-render-container");
   const visible = el => { const cs = getComputedStyle(el); return cs.visibility !== "hidden" && cs.display !== "none" && +cs.opacity !== 0; };
   /* the chat window is open when a big panel is showing inside the widget */
-  const chatOpen = () => { let open = false; roots().forEach(r => r.querySelectorAll("*").forEach(el => { if (open) return; const b = el.getBoundingClientRect(); if (b.width > 240 && b.height > 300 && visible(el)) open = true; })); return open; };
+  /* the chat window = the outermost big panel showing inside the widget */
+  let panel = null;
+  const findPanel = () => { let found = null; roots().forEach(r => r.querySelectorAll("*").forEach(el => { if (found) return; const b = el.getBoundingClientRect(); if (b.width > 240 && b.height > 300 && visible(el)) found = el; })); return found; };
+  const chatOpen = () => { panel = findPanel(); return !!panel; };
+  /* window effects: glowing frame behind, soft living aurora on top (never blocks taps) */
+  const glow = document.createElement("div"); glow.className = "rai-glow";
+  const soft = document.createElement("div"); soft.className = "rai-glow-soft";
+  const aura = document.createElement("div"); aura.className = "rai-aura"; aura.innerHTML = "<i class=a1></i><i class=a2></i><i class=a3></i><i class=a4></i><i class=shine></i>";
+  let wasOpen = false, mo = null;
+  const place = (el, b, rad) => { Object.assign(el.style, { left: b.left + "px", top: b.top + "px", width: b.width + "px", height: b.height + "px", borderRadius: rad }); };
+  const fx = open => {
+    document.documentElement.classList.toggle("rai-open", open);
+    if (!open) { [glow, soft, aura].forEach(e => e.classList.remove("on")); if (mo) { mo.disconnect(); mo = null; } wasOpen = false; return; }
+    [glow, soft, aura].forEach(e => { if (!e.isConnected) document.body.appendChild(e); });
+    const b = panel.getBoundingClientRect(), full = b.width >= innerWidth - 4;
+    let rad = getComputedStyle(panel).borderRadius; if (!rad || rad === "0px") rad = full ? "0px" : "18px";
+    place(aura, b, rad); place(soft, b, rad);
+    place(glow, { left: b.left - 2, top: b.top - 2, width: b.width + 4, height: b.height + 4 }, rad === "0px" ? "0px" : "calc(" + rad + " + 2px)");
+    glow.style.display = full ? "none" : "";
+    [glow, soft, aura].forEach(e => e.classList.add("on"));
+    if (!wasOpen) {
+      wasOpen = true;
+      if (!REDUCED) { panel.classList.remove("rai-pop"); void panel.offsetWidth; panel.classList.add("rai-pop"); const pp = panel; setTimeout(() => pp.classList.remove("rai-pop"), 800); aura.classList.add("burst"); setTimeout(() => aura.classList.remove("burst"), 450); }
+      /* new chat messages slide in */
+      mo = new MutationObserver(list => { if (REDUCED) return; list.forEach(m => m.addedNodes.forEach(n => {
+        if (n.nodeType !== 1 || n.querySelector("input,textarea") || n.matches("input,textarea")) return;
+        const r = n.getBoundingClientRect(); if (r.height < 16 || r.height > 400 || !n.textContent.trim()) return;
+        n.classList.add("rai-in");
+      })); });
+      mo.observe(panel, { childList: true, subtree: true });
+    }
+  };
   const findLauncher = () => {
     let best = null, area = 0;
     roots().forEach(r => r.querySelectorAll("*").forEach(el => {
@@ -857,6 +918,7 @@ html.rai-chat-open body > *:not(#VG_OVERLAY_CONTAINER):not(.vg-render-container)
   const tick = () => {
     const open = chatOpen();
     document.documentElement.classList.toggle("rai-chat-open", open && innerWidth <= 760);
+    fx(open);
     if (open) { halo.classList.remove("on"); closeTeaser(); return; }
     /* Convocore redraws its button after the chat closes, so look for it again whenever it changed */
     if (!btn || !btn.isConnected || !btn.getBoundingClientRect().width) {
@@ -889,7 +951,14 @@ html.rai-chat-open body > *:not(#VG_OVERLAY_CONTAINER):not(.vg-render-container)
   };
   /* any tap inside the chat counts as "seen", so the greeting never shows on top of it */
   document.addEventListener("pointerdown", e => { if (e.target.closest && e.target.closest("#VG_OVERLAY_CONTAINER, .vg-render-container")) closeTeaser(); }, true);
-  addEventListener("load", () => setInterval(tick, 400));
+  addEventListener("load", () => {
+    setInterval(tick, 400);
+    /* react instantly when the chat opens or closes */
+    const host = document.getElementById("VG_OVERLAY_CONTAINER"); let pending = false;
+    if (host) new MutationObserver(() => { if (pending) return; pending = true; requestAnimationFrame(() => { pending = false; tick(); }); })
+      .observe(host, { childList: true, subtree: true, attributes: true, attributeFilter: ["style", "class"] });
+    addEventListener("resize", tick); addEventListener("scroll", () => { if (wasOpen) tick(); }, { passive: true });
+  });
 })();
 </script>
 <!-- ===== END RAI glow ===== -->

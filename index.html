@@ -824,7 +824,7 @@ $("#form").addEventListener("submit", async e => {
 @media (prefers-reduced-motion: reduce){.rai-halo i{animation:none!important}}
 /* while the chat is open on a phone, hide the page behind it so no page content shows above the keyboard */
 html.rai-chat-open,html.rai-chat-open body{overflow:hidden!important;background:#06110D!important}
-html.rai-chat-open body > *:not(#VG_OVERLAY_CONTAINER):not(.vg-render-container):not(script):not(style){visibility:hidden!important}
+html.rai-chat-open body > *:not(#VG_OVERLAY_CONTAINER):not(.vg-render-container):not(script):not(style):not(.rai-aura):not(.rai-glow):not(.rai-glow-soft){visibility:hidden!important}
 /* ---- RAI chat window effects: pop-in, living aurora, glowing frame, animated messages ---- */
 @property --rai-h{syntax:"<number>";inherits:true;initial-value:158}
 @keyframes raiHue{0%,100%{--rai-h:158}33%{--rai-h:172}66%{--rai-h:146}}
@@ -855,6 +855,15 @@ html.rai-open .vg-render-container,html.rai-open .vg-render-container [data-them
 @keyframes raiDrift3{50%{transform:translate(25%,-35%) scale(1.2)}}
 @keyframes raiShine{0%{transform:translateX(-100%)}60%,100%{transform:translateX(100%)}}
 @media (prefers-reduced-motion: reduce){.rai-pop,.rai-in,.rai-aura i,.rai-glow::before{animation:none!important}}
+.rai-head{background:linear-gradient(120deg,#07261B,#0D4A36,#0F6B4C,#0B3A5A,#07261B)!important;background-size:300% 300%!important;animation:raiHead 12s ease-in-out infinite!important;color:#E9F5EF!important;border-bottom:1px solid rgba(43,217,143,.25)!important}
+.rai-head *{color:#E9F5EF}
+@keyframes raiHead{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.rai-inputbox{background:#0E2019!important;border:1px solid rgba(43,217,143,.45)!important;box-shadow:0 0 0 1px rgba(43,217,143,.08),0 0 26px -6px rgba(43,217,143,.55)!important;color:#E9F5EF!important;transition:box-shadow .3s,border-color .3s}
+.rai-inputbox:focus-within{border-color:#2BD98F!important;box-shadow:0 0 0 3px rgba(43,217,143,.18),0 0 34px -4px rgba(43,217,143,.7)!important}
+.rai-inputbox textarea,.rai-inputbox input{background:transparent!important;color:#E9F5EF!important}
+.rai-inputbox textarea::placeholder,.rai-inputbox input::placeholder{color:#8FB3A3!important}
+.rai-inputbox svg,.rai-inputbox p,.rai-inputbox span,.rai-inputbox label{color:#BFE6D3!important}
+@media (prefers-reduced-motion: reduce){.rai-head{animation:none!important}}
 </style>
 <script>
 /* Finds the chat button Convocore draws, then adds a glow behind it and a small greeting bubble. Never changes the chat itself. */
@@ -874,6 +883,19 @@ html.rai-open .vg-render-container,html.rai-open .vg-render-container [data-them
   const soft = document.createElement("div"); soft.className = "rai-glow-soft";
   const aura = document.createElement("div"); aura.className = "rai-aura"; aura.innerHTML = "<i class=a1></i><i class=a2></i><i class=a3></i><i class=a4></i><i class=shine></i>";
   let wasOpen = false, mo = null;
+  const solidBg = el => { const c = getComputedStyle(el).backgroundColor; return c && c !== "transparent" && !/rgba\(.*,\s*0\)$/.test(c); };
+  /* restyle the chat's header and message box without knowing Convocore's internal class names */
+  const skin = pb => {
+    if (!panel.querySelector(".rai-head")) {
+      for (const el of panel.querySelectorAll("*")) { const r = el.getBoundingClientRect();
+        if (Math.abs(r.top - pb.top) < 3 && r.width >= pb.width - 6 && r.height >= 40 && r.height <= 150 && solidBg(el)) { el.classList.add("rai-head"); break; } }
+    }
+    if (!panel.querySelector(".rai-inputbox")) {
+      const f = panel.querySelector("textarea, input[type=text], input:not([type]), [contenteditable=true]");
+      for (let el = f && f.parentElement; el && el !== panel; el = el.parentElement) {
+        if (solidBg(el) && el.getBoundingClientRect().width > pb.width * .6) { el.classList.add("rai-inputbox"); break; } }
+    }
+  };
   const place = (el, b, rad) => { Object.assign(el.style, { left: b.left + "px", top: b.top + "px", width: b.width + "px", height: b.height + "px", borderRadius: rad }); };
   const fx = open => {
     document.documentElement.classList.toggle("rai-open", open);
@@ -885,6 +907,7 @@ html.rai-open .vg-render-container,html.rai-open .vg-render-container [data-them
     place(glow, { left: b.left - 2, top: b.top - 2, width: b.width + 4, height: b.height + 4 }, rad === "0px" ? "0px" : "calc(" + rad + " + 2px)");
     glow.style.display = full ? "none" : "";
     [glow, soft, aura].forEach(e => e.classList.add("on"));
+    skin(b);
     if (!wasOpen) {
       wasOpen = true;
       if (!REDUCED) { panel.classList.remove("rai-pop"); void panel.offsetWidth; panel.classList.add("rai-pop"); const pp = panel; setTimeout(() => pp.classList.remove("rai-pop"), 800); aura.classList.add("burst"); setTimeout(() => aura.classList.remove("burst"), 450); }
